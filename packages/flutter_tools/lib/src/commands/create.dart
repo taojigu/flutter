@@ -783,10 +783,10 @@ String _validateProjectName(String projectName) {
 /// Return null if the project directory is legal. Return a validation message
 /// if we should disallow the directory name.
 String _validateProjectDir(String dirPath, { String flutterRoot, bool overwrite = false }) {
-  if (fs.path.isWithin(flutterRoot, dirPath)) {
-    return 'Cannot create a project within the Flutter SDK. '
-      "Target directory '$dirPath' is within the Flutter SDK at '$flutterRoot'.";
-  }
+  // if (fs.path.isWithin(flutterRoot, dirPath)) {
+  //   return 'Cannot create a project within the Flutter SDK. '
+  //     "Target directory '$dirPath' is within the Flutter SDK at '$flutterRoot'.";
+  // }
 
   // If the destination directory is actually a file, then we refuse to
   // overwrite, on the theory that the user probably didn't expect it to exist.
