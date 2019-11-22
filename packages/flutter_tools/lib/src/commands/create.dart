@@ -41,6 +41,8 @@ enum _ProjectType {
   package,
   /// This is a native plugin project.
   plugin,
+  /// This is a custom plugin template
+  customPlugin,
 }
 
 _ProjectType _stringToProjectType(String value) {
@@ -435,6 +437,7 @@ class CreateCommand extends FlutterCommand {
         generatedFileCount += await _generatePackage(relativeDir, templateContext, overwrite: overwrite);
         break;
       case _ProjectType.plugin:
+      case _ProjectType.customPlugin:
         generatedFileCount += await _generatePlugin(relativeDir, templateContext, overwrite: overwrite);
         break;
     }
