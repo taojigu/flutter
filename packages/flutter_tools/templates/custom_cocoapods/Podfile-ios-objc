@@ -1,6 +1,9 @@
 # Uncomment this line to define a global platform for your project
 # platform :ios, '9.0'
 
+source 'http://gerrit.lianjia.com/mobile_ios/LJComponentPodSpecs'
+source 'http://gerrit.lianjia.com/mobile_ios/Lianjia_component_Podspec'
+
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
@@ -60,6 +63,9 @@ target 'Runner' do
 
   # Keep pod path relative so it can be checked into Podfile.lock.
   pod 'Flutter', :path => 'Flutter'
+  
+
+
 
   # Plugin Pods
 

@@ -43,6 +43,8 @@ enum _ProjectType {
   plugin,
   /// This is a custom plugin template
   customPlugin,
+  /// This is a custom app template
+  customApp,
 }
 
 _ProjectType _stringToProjectType(String value) {
@@ -88,6 +90,11 @@ class CreateCommand extends FlutterCommand {
             'in Dart code with a platform-specific implementation for Android, for iOS code, or '
             'for both.',
         getEnumName(_ProjectType.module): 'Generate a project to add a Flutter module to an '
+            'existing Android or iOS application.',
+        getEnumName(_ProjectType.customPlugin): 'Generate a CUSTOM shareable Flutter project containing an API '
+            'in Dart code with a platform-specific implementation for Android, for iOS code, or '
+            'for both.',
+        getEnumName(_ProjectType.customApp): 'Generate a CUSTOM project to add a Flutter module to an '
             'existing Android or iOS application.',
       },
       defaultsTo: null,
@@ -428,6 +435,7 @@ class CreateCommand extends FlutterCommand {
     int generatedFileCount = 0;
     switch (template) {
       case _ProjectType.app:
+      case _ProjectType.customApp:
         generatedFileCount += await _generateApp(relativeDir, templateContext, overwrite: overwrite);
         break;
       case _ProjectType.module:
@@ -437,6 +445,7 @@ class CreateCommand extends FlutterCommand {
         generatedFileCount += await _generatePackage(relativeDir, templateContext, overwrite: overwrite);
         break;
       case _ProjectType.plugin:
+
       case _ProjectType.customPlugin:
         generatedFileCount += await _generatePlugin(relativeDir, templateContext, overwrite: overwrite);
         break;
@@ -544,6 +553,38 @@ To edit platform code in an IDE see https://flutter.dev/developing-packages/#edi
     return generatedCount;
   }
 
+  Future<int> _generateCustomPlugin(Directory directory, Map<String, dynamic> templateContext, { bool overwrite = false }) async {
+    int generatedCount = 0;
+    final String description = argResults.wasParsed('description')
+        ? stringArg('description')
+        : 'A new flutter plugin project.';
+    templateContext['description'] = description;
+    generatedCount += _renderTemplate('plugin', directory, templateContext, overwrite: overwrite);
+    if (boolArg('pub')) {
+      await pub.get(
+        context: PubContext.createPlugin,
+        directory: directory.path,
+        offline: boolArg('offline'),
+      );
+    }
+    final FlutterProject project = FlutterProject.fromDirectory(directory);
+    gradle.updateLocalProperties(project: project, requireAndroidSdk: false);
+
+    final String projectName = templateContext['projectName'] as String;
+    final String organization = templateContext['organization'] as String;
+    final String androidPluginIdentifier = templateContext['androidIdentifier'] as String;
+    final String exampleProjectName = projectName + '_example';
+    templateContext['projectName'] = exampleProjectName;
+    templateContext['androidIdentifier'] = _createAndroidIdentifier(organization, exampleProjectName);
+    templateContext['iosIdentifier'] = _createUTIIdentifier(organization, exampleProjectName);
+    templateContext['description'] = 'Demonstrates how to use the $projectName plugin.';
+    templateContext['pluginProjectName'] = projectName;
+    templateContext['androidPluginIdentifier'] = androidPluginIdentifier;
+
+    generatedCount += await _generateApp(project.example.directory, templateContext, overwrite: overwrite);
+    return generatedCount;
+  }
+
   Future<int> _generatePlugin(Directory directory, Map<String, dynamic> templateContext, { bool overwrite = false }) async {
     int generatedCount = 0;
     final String description = argResults.wasParsed('description')
@@ -573,6 +614,27 @@ To edit platform code in an IDE see https://flutter.dev/developing-packages/#edi
     templateContext['androidPluginIdentifier'] = androidPluginIdentifier;
 
     generatedCount += await _generateApp(project.example.directory, templateContext, overwrite: overwrite);
+    return generatedCount;
+  }
+
+  Future<int> _generateCustomApp(Directory directory, Map<String, dynamic> templateContext, { bool overwrite = false }) async {
+    int generatedCount = 0;
+    generatedCount += _renderTemplate('app', directory, templateContext, overwrite: overwrite);
+    final FlutterProject project = FlutterProject.fromDirectory(directory);
+    generatedCount += _injectGradleWrapper(project);
+
+    if (boolArg('with-driver-test')) {
+      final Directory testDirectory = directory.childDirectory('test_driver');
+      generatedCount += _renderTemplate('driver', testDirectory, templateContext, overwrite: overwrite);
+    }
+
+    if (boolArg('pub')) {
+      await pub.get(context: PubContext.create, directory: directory.path, offline: boolArg('offline'));
+      await project.ensureReadyForPlatformSpecificTooling(checkProjects: false);
+    }
+
+    gradle.updateLocalProperties(project: project, requireAndroidSdk: false);
+
     return generatedCount;
   }
 
