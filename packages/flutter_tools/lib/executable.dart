@@ -22,6 +22,7 @@ import 'src/commands/channel.dart';
 import 'src/commands/clean.dart';
 import 'src/commands/config.dart';
 import 'src/commands/create.dart';
+import 'src/commands/custom_create.dart';
 import 'src/commands/daemon.dart';
 import 'src/commands/devices.dart';
 import 'src/commands/doctor.dart';
@@ -71,6 +72,7 @@ Future<void> main(List<String> args) async {
     CleanCommand(),
     ConfigCommand(verboseHelp: verboseHelp),
     CreateCommand(),
+    CustomCreateCommand(),
     DaemonCommand(hidden: !verboseHelp),
     DevicesCommand(),
     DoctorCommand(verbose: verbose),
