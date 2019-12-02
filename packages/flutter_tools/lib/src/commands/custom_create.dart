@@ -79,10 +79,10 @@ class CustomCreateCommand extends FlutterCommand {
       help: 'Specify the type of project to create.',
       valueHelp: 'type',
       allowedHelp: <String, String>{
-        getEnumName(_ProjectType.app): '(default) Generate a Flutter application.',
-        getEnumName(_ProjectType.package): 'Generate a shareable Flutter project containing modular '
+        getEnumName(_ProjectType.app): '(default) Generate a CUSTOM Flutter application.',
+        getEnumName(_ProjectType.package): 'Generate a CUSTOM shareable Flutter project containing modular '
             'Dart code.',
-        getEnumName(_ProjectType.plugin): 'Generate a shareable Flutter project containing an API '
+        getEnumName(_ProjectType.plugin): 'Generate a shareable CUSTOM Flutter project containing an API '
             'in Dart code with a platform-specific implementation for Android, for iOS code, or '
             'for both.',
       },
@@ -498,7 +498,7 @@ To edit platform code in an IDE see https://flutter.dev/developing-packages/#edi
         ? argResults['description']
         : 'A new Flutter package project.';
     templateContext['description'] = description;
-    generatedCount += _renderTemplate('package', directory, templateContext, overwrite: overwrite);
+    generatedCount += _renderTemplate('custom_package', directory, templateContext, overwrite: overwrite);
     if (argResults['pub']) {
       await pubGet(
         context: PubContext.createPackage,
@@ -515,7 +515,7 @@ To edit platform code in an IDE see https://flutter.dev/developing-packages/#edi
         ? argResults['description']
         : 'A new flutter plugin project.';
     templateContext['description'] = description;
-    generatedCount += _renderTemplate('plugin', directory, templateContext, overwrite: overwrite);
+    generatedCount += _renderTemplate('custom_plugin', directory, templateContext, overwrite: overwrite);
     if (argResults['pub']) {
       await pubGet(
         context: PubContext.createPlugin,
@@ -543,7 +543,7 @@ To edit platform code in an IDE see https://flutter.dev/developing-packages/#edi
 
   Future<int> _generateApp(Directory directory, Map<String, dynamic> templateContext, { bool overwrite = false }) async {
     int generatedCount = 0;
-    generatedCount += _renderTemplate('app', directory, templateContext, overwrite: overwrite);
+    generatedCount += _renderTemplate('custom_app', directory, templateContext, overwrite: overwrite);
     final FlutterProject project = FlutterProject.fromDirectory(directory);
     generatedCount += _injectGradleWrapper(project);
 

@@ -60,11 +60,13 @@ enum CocoaPodsStatus {
 }
 
 class CocoaPods {
+
+  CocoaPods({this.templateDirName});
+  String templateDirName;
   Future<String> _versionText;
 
   String get cocoaPodsMinimumVersion => '1.6.0';
   String get cocoaPodsRecommendedVersion => '1.6.0';
-
   Future<bool> get isInstalled => exitsHappyAsync(<String>['which', 'pod']);
 
   Future<String> get cocoaPodsVersionText {
@@ -224,7 +226,7 @@ class CocoaPods {
         'packages',
         'flutter_tools',
         'templates',
-        'cocoapods',
+        templateDirName ?? 'cocoapods',
         podfileTemplateName,
       ));
       podfileTemplate.copySync(podfile.path);
